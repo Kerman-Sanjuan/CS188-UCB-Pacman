@@ -1,0 +1,197 @@
+# search.py
+from game import Directions
+import util
+from util import Queue
+from util import Stack
+from util import PriorityQueue
+# ---------
+# Licensing Information:  You are free to use or extend these projects for
+# educational purposes provided that (1) you do not distribute or publish
+# solutions, (2) you retain this notice, and (3) you provide clear
+# attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
+#
+# Attribution Information: The Pacman AI projects were developed at UC Berkeley.
+# The core projects and autograders were primarily created by John DeNero
+# (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+# Student side autograding was added by Brad Miller, Nick Hay, and
+# Pieter Abbeel (pabbeel@cs.berkeley.edu).
+
+
+"""
+In search.py, you will implement generic search algorithms which are called by
+Pacman agents (in searchAgents.py).
+"""
+
+
+
+class SearchProblem:
+    """
+    This class outlines the structure of a search problem, but doesn't implement
+    any of the methods (in object-oriented terminology: an abstract class).
+
+    You do not need to change anything in this class, ever.
+    """
+
+    def getStartState(self):
+        """
+        Returns the start state for the search problem.
+        Devuelve la posicion inicial del pacman.
+        """
+        util.raiseNotDefined()
+
+    def isGoalState(self, state):
+        """
+          state: Search state
+
+        Returns True if and only if the state is a valid goal state.
+        """
+        util.raiseNotDefined()
+
+    def getSuccessors(self, state):
+        """
+          state: Search state
+
+        For a given state, this should return a list of triples, (successor,
+        action, stepCost), where 'successor' is a successor to the current
+        state, 'action' is the action required to get there, and 'stepCost' is
+        the incremental cost of expanding to that successor.
+        """
+        util.raiseNotDefined()
+
+    def getCostOfActions(self, actions):
+        """
+         actions: A list of actions to take
+
+        This method returns the total cost of a particular sequence of actions.
+        The sequence must be composed of legal moves.
+        """
+        util.raiseNotDefined()
+
+
+def tinyMazeSearch(problem):
+    """
+    Returns a sequence of moves that solves tinyMaze.  For any other maze, the
+    sequence of moves will be incorrect, so only use this for tinyMaze.
+    """
+
+    s = Directions.SOUTH
+    w = Directions.WEST
+    return [s, s, w, s, w, w, s, w]
+
+
+def depthFirstSearch(problem):
+    observed = set()  # Un set de cordenadas de las casillas vistas
+    # List iteration
+    no_observed = Stack()
+    #vamos a plantear una solucion donde la estructura de cada estado sea una tupla ((posiconX,posicionY),[camino hasta el punto]).
+    no_observed.push((problem.getStartState(), []))
+    #De esta manera, cada vez que tengamos un elemento, solo tenemos que anadir la cordenada y la direccion tomada
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        cord_actual = actual[0]
+        camino_actual = actual[1]
+        if problem.isGoalState(cord_actual):
+            return camino_actual
+
+        for childs in problem.getSuccessors(cord_actual):
+            cord_hijo = childs[0]
+            movimiento_hijo = childs[1]
+            if childs[0] not in observed:
+                no_observed.push((cord_hijo, camino_actual+[movimiento_hijo]))
+        observed.add(cord_actual)
+
+    return []
+
+
+def breadthFirstSearch(problem):
+    no_observed = Queue()
+    observed = set()
+    # List iteration
+    #vamos a plantear una solucion donde la estructura de cada estado sea una tupla ((posiconX,posicionY),[camino tomado hasta el punto actual]).
+    no_observed.push((problem.getStartState(), []))
+    #De esta manera, cada vez que tengamos un elemento, solo tenemos que anadir la cordenada y la direccion tomada
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        cord_actual = actual[0]
+        camino_actual = actual[1]
+
+        if problem.isGoalState(cord_actual):
+            return camino_actual
+
+        for childs in problem.getSuccessors(cord_actual):
+            cord_hijo = childs[0]
+            movimiento_hijo = childs[1]
+            if cord_hijo not in observed:
+                no_observed.push((cord_hijo, camino_actual+[movimiento_hijo]))
+                # IMPORTANTE: https://stackoverflow.com/questions/12765039/too-many-nodes-expanded-in-bfs-graph-search
+                observed.add(cord_hijo)
+        observed.add(cord_actual)
+
+    return []
+
+
+def uniformCostSearch(problem):
+    no_observed = PriorityQueue()
+    observed = set()
+    # List iteration
+    #vamos a plantear una solucion donde la estructura de cada estado sea una tupla ((posiconX,posicionY),[camino tomado hasta el punto actual]).
+    no_observed.push((problem.getStartState(), []), 0)
+    #De esta manera, cada vez que tengamos un elemento, solo tenemos que anadir la cordenada y la direccion tomada
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        cord_actual = actual[0]
+        camino_actual = actual[1]
+
+        if problem.isGoalState(cord_actual):
+            return camino_actual
+
+        if cord_actual not in observed:
+            observed.add(cord_actual)
+            for childs in problem.getSuccessors(cord_actual):
+                cord_hijo = childs[0]
+                movimiento_hijo = childs[1]
+                if childs not in observed:
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo]), problem.getCostOfActions(camino_actual+[movimiento_hijo]))
+
+    return []
+
+
+def nullHeuristic(state, problem=None):
+    """
+    A heuristic function estimates the cost from the current state to the nearest
+    goal in the provided SearchProblem.  This heuristic is trivial.
+    """
+    return 0
+
+
+def aStarSearch(problem, heuristic=nullHeuristic):
+    no_observed = PriorityQueue()
+    observed = set()
+    # List iteration
+    #vamos a plantear una solucion donde la estructura de cada estado sea una tupla ((posiconX,posicionY),[camino tomado hasta el punto actual]).
+    no_observed.push((problem.getStartState(), []), 0)
+    #De esta manera, cada vez que tengamos un elemento, solo tenemos que anadir la cordenada y la direccion tomada
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        cord_actual = actual[0]
+        camino_actual = actual[1]
+
+        if problem.isGoalState(cord_actual):
+            return camino_actual
+
+        if cord_actual not in observed:
+            observed.add(cord_actual)
+            for childs in problem.getSuccessors(cord_actual):
+                cord_hijo = childs[0]
+                movimiento_hijo = childs[1]
+                if childs not in observed:
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo]), problem.getCostOfActions(camino_actual+[movimiento_hijo])+heuristic(cord_hijo,problem))
+
+    return []
+
+
+# Abbreviations
+bfs = breadthFirstSearch
+dfs = depthFirstSearch
+astar = aStarSearch
+ucs = uniformCostSearch
