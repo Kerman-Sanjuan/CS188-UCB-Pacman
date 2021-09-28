@@ -96,7 +96,7 @@ def depthFirstSearch(problem):
         for childs in problem.getSuccessors(cord_actual):
             cord_hijo = childs[0]
             movimiento_hijo = childs[1]
-            if childs[0] not in observed:
+            if cord_hijo not in observed:
                 no_observed.push((cord_hijo, camino_actual+[movimiento_hijo]))
         observed.add(cord_actual)
 
@@ -141,7 +141,7 @@ def uniformCostSearch(problem):
         actual = no_observed.pop()
         cord_actual = actual[0]
         camino_actual = actual[1]
-
+        
         if problem.isGoalState(cord_actual):
             return camino_actual
 
@@ -150,7 +150,7 @@ def uniformCostSearch(problem):
             for childs in problem.getSuccessors(cord_actual):
                 cord_hijo = childs[0]
                 movimiento_hijo = childs[1]
-                if childs not in observed:
+                if cord_hijo not in observed:
                     no_observed.push((cord_hijo, camino_actual+[movimiento_hijo]), problem.getCostOfActions(camino_actual+[movimiento_hijo]))
 
     return []
@@ -169,23 +169,27 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     observed = set()
     # List iteration
     #vamos a plantear una solucion donde la estructura de cada estado sea una tupla ((posiconX,posicionY),[camino tomado hasta el punto actual]).
-    no_observed.push((problem.getStartState(), []), 0)
+    no_observed.push((problem.getStartState(), [],0), 0)
     #De esta manera, cada vez que tengamos un elemento, solo tenemos que anadir la cordenada y la direccion tomada
     while not no_observed.isEmpty():
         actual = no_observed.pop()
         cord_actual = actual[0]
         camino_actual = actual[1]
+        coste_actual = actual[2]
 
         if problem.isGoalState(cord_actual):
             return camino_actual
 
         if cord_actual not in observed:
             observed.add(cord_actual)
-            for childs in problem.getSuccessors(cord_actual):
-                cord_hijo = childs[0]
-                movimiento_hijo = childs[1]
-                if childs not in observed:
-                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo]), problem.getCostOfActions(camino_actual+[movimiento_hijo])+heuristic(cord_hijo,problem))
+            for child in problem.getSuccessors(cord_actual):
+                cord_hijo = child[0]
+                movimiento_hijo = child[1]
+                coste_hijo = child[2]
+                if cord_hijo not in observed:
+                    coste_total_sin_heuristico = coste_actual + coste_hijo
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo],coste_total_sin_heuristico),
+                                     coste_total_sin_heuristico+heuristic(cord_hijo,problem))
 
     return []
 
