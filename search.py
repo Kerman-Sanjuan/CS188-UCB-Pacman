@@ -2,6 +2,7 @@
 from game import Directions
 from util import Queue
 from util import Stack
+from util import PriorityQueue
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
 # educational purposes provided that (1) you do not distribute or publish
@@ -93,8 +94,7 @@ def depthFirstSearch(problem):
         if problem.isGoalState(coord_actual):
             return path_actual
 
-        hijos = problem.getSuccessors(coord_actual)
-        for coord_hijo, action_hijo, cost_hijo in hijos:
+        for coord_hijo, action_hijo, cost_hijo in problem.getSuccessors(coord_actual):
             if coord_hijo not in observed:
                 path = path_actual + [action_hijo]
                 no_observed.push((coord_hijo, path))
@@ -118,8 +118,7 @@ def breadthFirstSearch(problem):
         if problem.isGoalState(coord_actual):
             return path_actual
         
-        hijos = problem.getSuccessors(coord_actual)
-        for coord_hijo, action_hijo, cost_hijo in hijos:
+        for coord_hijo, action_hijo, cost_hijo in problem.getSuccessors(coord_actual):
             if coord_hijo not in observed:
                 path = path_actual + [action_hijo]
                 no_observed.push((coord_hijo, path))
@@ -130,9 +129,30 @@ def breadthFirstSearch(problem):
 
 
 def uniformCostSearch(problem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    no_observed = PriorityQueue()
+    observed = set()
+    no_observed.push((problem.getStartState(), [],0), 0)
+
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        cord_actual = actual[0]
+        camino_actual = actual[1]
+        coste_actual = actual[2]
+        if problem.isGoalState(cord_actual):
+            return camino_actual
+
+        if cord_actual not in observed:
+            observed.add(cord_actual)
+            for child in problem.getSuccessors(cord_actual):
+                cord_hijo = child[0]
+                movimiento_hijo = child[1]
+                coste_hijo = child[2]
+
+                if cord_hijo not in observed:
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo],coste_actual+coste_hijo),
+                                     coste_actual+coste_hijo)
+
+    return []
 
 
 def nullHeuristic(state, problem=None):
@@ -144,9 +164,38 @@ def nullHeuristic(state, problem=None):
 
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    no_observed = PriorityQueue()
+    observed = set()
+    no_observed.push((problem.getStartState(), [],0), 0) #((x,y),[camino],coste_sin_heuristico],coste_con_heuristico)
+
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        cord_actual = actual[0]
+        camino_actual = actual[1]
+        coste_actual = actual[2]
+
+        if problem.isGoalState(cord_actual):
+            return camino_actual
+
+        if cord_actual not in observed:
+            observed.add(cord_actual)
+            for child in problem.getSuccessors(cord_actual):
+                cord_hijo = child[0]
+                movimiento_hijo = child[1]
+                coste_hijo = child[2]
+                if cord_hijo not in observed:
+                    coste_total_sin_heuristico = coste_actual + coste_hijo
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo],coste_total_sin_heuristico),
+                                     coste_total_sin_heuristico+heuristic(cord_hijo,problem))
+
+    return []
+
+
+# Abbreviations
+bfs = breadthFirstSearch
+dfs = depthFirstSearch
+astar = aStarSearch
+ucs = uniformCostSearch
 
 
 # Abbreviations
