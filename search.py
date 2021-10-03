@@ -22,6 +22,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -234,7 +235,29 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    no_observed = util.PriorityQueue() #la cola de prioridad recibe un parametro con el que decidira cual de los elementos que entran en la cola merece prioridad. En este caso el elemento con menor coste tendra mayor prioridad
+    observed = set() #Creamos un set vacio para guardar las posiciones de las casillas ya visitadas
+    inicio = problem.getStartState()
+    no_observed.push((inicio, [], 0), 0) #la estructura de los elementos a guardar en la cola serán así (posicion, camino, coste)
+
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        pos_actual = actual[0]
+        camino_actual = actual[1]
+        coste_actual = actual[2]
+        if(problem.isGoalState(pos_actual)):
+            return camino_actual
+        if pos_actual not in observed:
+            observed.add(pos_actual)
+            hijos = problem.getSuccessors(pos_actual)
+            for pos_hijo, action_hijo, cost_hijo in hijos:
+                if pos_hijo not in observed:
+                    nuevo_camino = camino_actual + [action_hijo]
+                    nuevo_coste = coste_actual + cost_hijo
+                    no_observed.push((pos_hijo, nuevo_camino, nuevo_coste), nuevo_coste)
+        
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -246,8 +269,30 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    no_observed = util.PriorityQueue() #la cola de prioridad recibe un parametro con el que decidira cual de los elementos que entran en la cola merece prioridad. En este caso el elemento con menor coste tendra mayor prioridad
+    observed = set() #Creamos un set vacio para guardar las posiciones de las casillas ya visitadas
+    inicio = problem.getStartState()
+    no_observed.push((inicio, [], 0), 0) #la estructura de los elementos a guardar en la cola serán así (posicion, camino, coste)
 
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        pos_actual = actual[0]
+        camino_actual = actual[1]
+        coste_actual = actual[2]
+        if(problem.isGoalState(pos_actual)):
+            return camino_actual
+        if pos_actual not in observed:
+            observed.add(pos_actual)
+            hijos = problem.getSuccessors(pos_actual)
+            for pos_hijo, action_hijo, cost_hijo in hijos:
+                if pos_hijo not in observed:
+                    nuevo_camino = camino_actual + [action_hijo]
+                    nuevo_coste_sin_heuristico = coste_actual + cost_hijo
+                    nuevo_coste_con_heuristico = coste_actual + cost_hijo + heuristic(pos_hijo, problem)
+                    no_observed.push((pos_hijo, nuevo_camino, nuevo_coste_sin_heuristico), nuevo_coste_con_heuristico)
+        
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch
