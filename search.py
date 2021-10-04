@@ -90,7 +90,7 @@ def depthFirstSearch(problem):
         actual = no_observed.pop()
         coord_actual = actual[0]
         path_actual = actual[1]
-        
+
         if problem.isGoalState(coord_actual):
             return path_actual
 
@@ -99,7 +99,7 @@ def depthFirstSearch(problem):
                 path = path_actual + [action_hijo]
                 no_observed.push((coord_hijo, path))
         observed.add(coord_actual)
-        
+
     return []
 
 
@@ -114,24 +114,24 @@ def breadthFirstSearch(problem):
         actual = no_observed.pop()
         coord_actual = actual[0]
         path_actual = actual[1]
-        
+
         if problem.isGoalState(coord_actual):
             return path_actual
-        
+
         for coord_hijo, action_hijo, cost_hijo in problem.getSuccessors(coord_actual):
             if coord_hijo not in observed:
                 path = path_actual + [action_hijo]
                 no_observed.push((coord_hijo, path))
                 observed.add(coord_hijo)
         observed.add(coord_actual)
-        
+
     return []
 
 
 def uniformCostSearch(problem):
     no_observed = PriorityQueue()
     observed = set()
-    no_observed.push((problem.getStartState(), [],0), 0)
+    no_observed.push((problem.getStartState(), [], 0), 0)
 
     while not no_observed.isEmpty():
         actual = no_observed.pop()
@@ -149,7 +149,7 @@ def uniformCostSearch(problem):
                 coste_hijo = child[2]
 
                 if cord_hijo not in observed:
-                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo],coste_actual+coste_hijo),
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo], coste_actual+coste_hijo),
                                      coste_actual+coste_hijo)
 
     return []
@@ -166,7 +166,9 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     no_observed = PriorityQueue()
     observed = set()
-    no_observed.push((problem.getStartState(), [],0), 0) #((x,y),[camino],coste_sin_heuristico],coste_con_heuristico)
+
+    # ((x,y),[camino],coste_sin_heuristico],coste_con_heuristico)
+    no_observed.push((problem.getStartState(), [], 0), 0)
 
     while not no_observed.isEmpty():
         actual = no_observed.pop()
@@ -185,8 +187,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 coste_hijo = child[2]
                 if cord_hijo not in observed:
                     coste_total_sin_heuristico = coste_actual + coste_hijo
-                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo],coste_total_sin_heuristico),
-                                     coste_total_sin_heuristico+heuristic(cord_hijo,problem))
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo], coste_total_sin_heuristico),
+                                     coste_total_sin_heuristico+heuristic(cord_hijo, problem))
 
     return []
 
