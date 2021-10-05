@@ -511,8 +511,6 @@ def foodHeuristic(state, problem):
     # 1. Paso, conseguir la lista de las comidas disponibles por coordenadas.
     comidas = foodGrid.asList()
     # 2. Paso, iterar las comidas disponibles y devolver la comida con menor heuristico.
-    # for comida in comidas:
-    # Tenemos que encontrar la lista de las comidas disponibles en cada momento.
     aux = 0
     for pos_comida in comidas:
         tmp = mazeDistance(position,pos_comida,problem.startingGameState)
@@ -547,11 +545,9 @@ class ClosestDotSearchAgent(SearchAgent):
         gameState.
         """
         # Here are some useful elements of the startState
-        startPosition = gameState.getPacmanPosition()
-        food = gameState.getFood()
-        walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
+        return search.bfs(problem)
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
@@ -588,6 +584,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x, y = state
+        return (x,y) in self.food.asList() # Ya que me lo dan asignado... uso esas variables
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
