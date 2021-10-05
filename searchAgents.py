@@ -318,20 +318,20 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        return (self.startingPosition, ())
+        "* YOUR CODE HERE *"
+        return (self.startingPosition, self.corners) 
+        #al llamar a este metodo nos devuelve la posicion del packman y de las 4 esquinas en una tupla. 
+        #Devuelve [(x,y), ((1,1), (1,top), (right, 1), (right, top))]
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        lista = []
-        #Caso ultimo nodo para evitar la expansion
-        if((state[0] in self.corners) and (state[0] not in state[1])):
-            lista = list(state[1])
-            lista.append(state[0])
-        return len(lista) == len(self.corners)
+        "* YOUR CODE HERE *"
+        lista = list(state[1]) #convertirmos a una lista la tupla de las posiciones de las esquinas
+        if(state[0] in lista): #si la posicion (x,y) si es una de las 4 esquinas
+            lista.remove(state[0]) #la eliminamos de la lista de las posiciones de las esquinas
+        return len(lista) == 0 #returneamos el boolean de si la lista con las posiciones de las esquinas está vacia
 
     def getSuccessors(self, state):
         """
@@ -343,20 +343,22 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
+
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            x, y = state[0]
-            visited_corners = state[1]
+            x,y = state[0]
+            lista = list(state[1]) 
+            if (x,y) in lista: 
+                lista.remove((x,y))
+
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
                 nextState = (nextx, nexty)
-                if((state[0] in self.corners) and (state[0] not in visited_corners)):
-                    lista_visited_cornsers = list(visited_corners)
-                    lista_visited_cornsers.append(state[0])
-                    visited_corners = tuple(lista_visited_cornsers)
-                successors.append(((nextState, visited_corners), action, 1))
-        self._expanded += 1  # DO NOT CHANGE
+                cost = 1
+                successors.append( ( (nextState,tuple(lista)), action, cost) )
+
+        self._expanded += 1 
         return successors
 
     def getCostOfActions(self, actions):
@@ -393,19 +395,14 @@ def cornersHeuristic(state, problem):
     walls = problem.walls
     # Se me ocurren varias soluciones: La primera seria el devolver la distancia euclidea, y la otra la distancia manhattan, por conveniencia
     # y viendo que el manhattan puede devolver un numero mas fiable, calculare la distancia manhattan.
+    not_visited = state[1]
     aux = 0
-    esquinas_visitadas = state[1]
-    "*** YOUR CODE HERE ***"
-    not_visited = []
-    for corner in corners:
-        if not (corner in esquinas_visitadas):
-          not_visited.append(corner)
-
     for corner in not_visited:
-        mh_dist = util.manhattanDistance(state[0], corner)
-        if (mh_dist > aux):
+        mh_dist = util.manhattanDistance(state[0],corner)
+        if mh_dist > aux :
             aux = mh_dist
-    return aux  # Default to trivial solution
+    "* YOUR CODE HERE *"
+    return aux # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):
