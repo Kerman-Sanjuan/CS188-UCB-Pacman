@@ -506,10 +506,19 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    print(position)
-
-    """ Tengo que devolver un numero que sirva como el "coste" pero esta vez calculado con una formula, o un heuristico. """
-    return 0
+    """ Vamos a devolver el heuristico, que en este caso, va ser la comida mas cercana
+        Que tenemos que conseguir la cordenada de algun modo"""
+    # 1. Paso, conseguir la lista de las comidas disponibles por coordenadas.
+    comidas = foodGrid.asList()
+    # 2. Paso, iterar las comidas disponibles y devolver la comida con menor heuristico.
+    # for comida in comidas:
+    # Tenemos que encontrar la lista de las comidas disponibles en cada momento.
+    aux = 0
+    for pos_comida in comidas:
+        tmp = mazeDistance(position,pos_comida,problem.startingGameState)
+        if (tmp > aux):
+            aux = tmp
+    return aux
 
 
 class ClosestDotSearchAgent(SearchAgent):
