@@ -295,14 +295,19 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition, self.corners) 
+        #al llamar a este metodo nos devuelve la posicion del packman y de las 4 esquinas en una tupla. 
+        #Devuelve [(x,y), ((1,1), (1,top), (right, 1), (right, top))]
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        lista = list(state[1]) #convertirmos a una lista la tupla de las posiciones de las esquinas
+        if(state[0] in lista): #si la posicion (x,y) si es una de las 4 esquinas
+            lista.remove(state[0]) #la eliminamos de la lista de las posiciones de las esquinas
+        return len(lista) == 0 #returneamos el boolean de si la lista con las posiciones de las esquinas está vacia
 
     def getSuccessors(self, state):
         """
@@ -317,15 +322,19 @@ class CornersProblem(search.SearchProblem):
 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            x,y = state[0]
+            lista = list(state[1]) #lista con las posiciones de las esquinas
+            if (x,y) in lista: #si la posicion estado es una de las posiciones de las esquinas
+                lista.remove((x,y)) #la borramos
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextState = (nextx, nexty)
+                cost = 1
+                successors.append(((nextState,tuple(lista)), action, cost)) 
+                #hacemos append de la siguente posicion con la lista de esquinas restantes por visitar, la accion y el coste
 
-            "*** YOUR CODE HERE ***"
-
+            
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
@@ -358,9 +367,14 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
+    not_visited = state[1]
+    aux = 0
+    for corner in not_visited:
+        mh_dist = util.manhattanDistance(state[0],corner)
+        if mh_dist > aux :
+            aux = mh_dist
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    return aux # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -454,6 +468,8 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+
+
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):
