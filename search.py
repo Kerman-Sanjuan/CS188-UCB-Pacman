@@ -1,8 +1,7 @@
 # search.py
 from game import Directions
-from util import Queue
-from util import Stack
 from util import PriorityQueue
+import util
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
 # educational purposes provided that (1) you do not distribute or publish
@@ -21,7 +20,6 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
-import util
 
 
 class SearchProblem:
@@ -84,6 +82,7 @@ def depthFirstSearch(problem):
     no_observed = util.Stack()
     observed = set()
     inicio = problem.getStartState()
+    # ((x,y),[camino])
     no_observed.push((inicio, []))
 
     while not no_observed.isEmpty():
@@ -108,6 +107,7 @@ def breadthFirstSearch(problem):
     no_observed = util.Queue()
     observed = set()
     inicio = problem.getStartState()
+    # ((x,y),[camino])
     no_observed.push((inicio, []))
 
     while not no_observed.isEmpty():
@@ -131,6 +131,7 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     no_observed = PriorityQueue()
     observed = set()
+        # ((x,y),[camino],coste),coste)
     no_observed.push((problem.getStartState(), [], 0), 0)
 
     while not no_observed.isEmpty():
@@ -167,7 +168,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     no_observed = PriorityQueue()
     observed = set()
 
-    # ((x,y),[camino],coste_sin_heuristico],coste_con_heuristico)
+    # ((x,y),[camino],coste_sin_heuristico),coste_con_heuristico)
     no_observed.push((problem.getStartState(), [], 0), 0)
 
     while not no_observed.isEmpty():
@@ -199,9 +200,3 @@ dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
 
-
-# Abbreviations
-bfs = breadthFirstSearch
-dfs = depthFirstSearch
-astar = aStarSearch
-ucs = uniformCostSearch
