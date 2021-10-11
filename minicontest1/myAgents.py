@@ -69,7 +69,7 @@ class ClosestDotAgent(Agent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState, self.index)
 
-
+        return search.bfs(problem)
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
@@ -108,7 +108,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Ya que me lo dan asignado... uso las variables
+        return (x, y) in self.food.asList()
+       
 
