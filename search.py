@@ -21,7 +21,6 @@ Pacman agents (in searchAgents.py).
 """
 
 
-
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -131,7 +130,7 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     no_observed = PriorityQueue()
     observed = set()
-        # ((x,y),[camino],coste),coste)
+    # ((x,y),[camino],coste),coste)
     no_observed.push((problem.getStartState(), [], 0), 0)
 
     while not no_observed.isEmpty():
@@ -199,4 +198,3 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
-

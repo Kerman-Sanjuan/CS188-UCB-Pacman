@@ -320,14 +320,13 @@ class CornersProblem(search.SearchProblem):
         """
         "* YOUR CODE HERE *"
         return (self.startingPosition, self.corners)
-        #al llamar a este metodo nos devuelve la posicion del packman y de las 4 esquinas en una tupla.
         #Devuelve [(x,y), ((1,1), (1,top), (right, 1), (right, top))]
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "* YOUR CODE HERE *"
+        
         lista = list(state[1])
         if(state[0] in lista):
             lista.remove(state[0])
@@ -391,14 +390,14 @@ def cornersHeuristic(state, problem):
     admissible (as well as consistent).
     """
 
-    # Se me ocurren varias soluciones: La primera seria el devolver la distancia euclidea, y la otra la distancia manhattan, por conveniencia
-    # y viendo que el manhattan puede devolver un numero mas fiable, calculare la distancia manhattan.
+    # Se me ocurren varias soluciones: La primera sería el devolver la distancia euclídea, y la otra la distancia Manhattan, por conveniencia
+    # y viendo que el Manhattan puede devolver un número más ajustado a la realidad, calcularé la distancia Manhattan.
     not_visited = state[1]
     aux = 0
     for corner in not_visited:
         mh_dist = util.manhattanDistance(state[0], corner)
         if mh_dist > aux:
-            # Devolvemos el maximo por que es el que mas se aproxima a la realidad.
+            # Devolvemos el máximo por que es el que mas se aproxima a la realidad.
             aux = mh_dist
     return aux
 
@@ -508,12 +507,12 @@ def foodHeuristic(state, problem):
         Que tenemos que conseguir la cordenada de algun modo"""
     # 1. Paso, conseguir la lista de las comidas disponibles por coordenadas.
     comidas = foodGrid.asList()
-    # 2. Paso, iterar las comidas disponibles y devolver la comida con menor heuristico.
+    # 2. Paso, iterar las comidas disponibles y devolver la comida con menor heurístico.
     aux = 0
     for pos_comida in comidas:
         tmp = mazeDistance(position, pos_comida, problem.startingGameState)
         if (tmp > aux):
-            # Lo mismo mencionado previamente, el heuristico maximo es el que mas aproxima a la realidad.
+            # Lo mismo mencionado previamente, el heurístico máximo es el que más aproxima a la realidad.
             aux = tmp
     return aux
 
@@ -580,7 +579,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x, y = state
-        # Ya que me lo dan asignado... uso esas variables
+        # Ya que me lo dan asignado... uso las variables
         return (x, y) in self.food.asList()
 
 
