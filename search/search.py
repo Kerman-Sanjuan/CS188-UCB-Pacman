@@ -1,10 +1,13 @@
 # search.py
+from game import Directions
+from util import PriorityQueue
+import util
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -17,7 +20,6 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
-import util
 
 class SearchProblem:
     """
@@ -30,6 +32,7 @@ class SearchProblem:
     def getStartState(self):
         """
         Returns the start state for the search problem.
+        Devuelve la posicion inicial del pacman.
         """
         util.raiseNotDefined()
 
@@ -67,37 +70,90 @@ def tinyMazeSearch(problem):
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
     sequence of moves will be incorrect, so only use this for tinyMaze.
     """
-    from game import Directions
+
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
+    no_observed = util.Stack()
+    observed = set()
+    inicio = problem.getStartState()
+    # ((x,y),[camino])
+    no_observed.push((inicio, []))
 
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        coord_actual = actual[0]
+        path_actual = actual[1]
 
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+        if problem.isGoalState(coord_actual):
+            return path_actual
+
+        for coord_hijo, action_hijo, cost_hijo in problem.getSuccessors(coord_actual):
+            if coord_hijo not in observed:
+                path = path_actual + [action_hijo]
+                no_observed.push((coord_hijo, path))
+        observed.add(coord_actual)
+
+    return []
+
 
 def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    no_observed = util.Queue()
+    observed = set()
+    inicio = problem.getStartState()
+    # ((x,y),[camino])
+    no_observed.push((inicio, []))
+
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        coord_actual = actual[0]
+        path_actual = actual[1]
+
+        if problem.isGoalState(coord_actual):
+            return path_actual
+
+        for coord_hijo, action_hijo, cost_hijo in problem.getSuccessors(coord_actual):
+            if coord_hijo not in observed:
+                path = path_actual + [action_hijo]
+                no_observed.push((coord_hijo, path))
+                observed.add(coord_hijo)
+        observed.add(coord_actual)
+
+    return []
+
 
 def uniformCostSearch(problem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    no_observed = PriorityQueue()
+    observed = set()
+    # ((x,y),[camino],coste),coste)
+    no_observed.push((problem.getStartState(), [], 0), 0)
+
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        cord_actual = actual[0]
+        camino_actual = actual[1]
+        coste_actual = actual[2]
+        if problem.isGoalState(cord_actual):
+            return camino_actual
+
+        if cord_actual not in observed:
+            observed.add(cord_actual)
+            for child in problem.getSuccessors(cord_actual):
+                cord_hijo = child[0]
+                movimiento_hijo = child[1]
+                coste_hijo = child[2]
+
+                if cord_hijo not in observed:
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo], coste_actual+coste_hijo),
+                                     coste_actual+coste_hijo)
+
+    return []
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -106,10 +162,35 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    no_observed = PriorityQueue()
+    observed = set()
+
+    # ((x,y),[camino],coste_sin_heuristico),coste_con_heuristico)
+    no_observed.push((problem.getStartState(), [], 0), 0)
+
+    while not no_observed.isEmpty():
+        actual = no_observed.pop()
+        cord_actual = actual[0]
+        camino_actual = actual[1]
+        coste_actual = actual[2]
+
+        if problem.isGoalState(cord_actual):
+            return camino_actual
+
+        if cord_actual not in observed:
+            observed.add(cord_actual)
+            for child in problem.getSuccessors(cord_actual):
+                cord_hijo = child[0]
+                movimiento_hijo = child[1]
+                coste_hijo = child[2]
+                if cord_hijo not in observed:
+                    coste_total_sin_heuristico = coste_actual + coste_hijo
+                    no_observed.push((cord_hijo, camino_actual+[movimiento_hijo], coste_total_sin_heuristico),
+                                     coste_total_sin_heuristico+heuristic(cord_hijo, problem))
+
+    return []
 
 
 # Abbreviations
