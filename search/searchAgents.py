@@ -12,6 +12,12 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 import sys
+import search
+from game import Directions
+from game import Agent
+from game import Actions
+import util
+import time
 """
 This file contains all of the agents that can be selected to control Pacman.  To
 select an agent, use the '-p' option when running pacman.py.  Arguments can be
@@ -34,12 +40,7 @@ description for details.
 Good luck and happy searching!
 """
 
-from game import Directions
-from game import Agent
-from game import Actions
-import util
-import time
-import search
+
 
 
 class GoWestAgent(Agent):
