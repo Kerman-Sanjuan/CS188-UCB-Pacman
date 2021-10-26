@@ -352,9 +352,20 @@ def loadRushHour(boardNumber):
     return RushHourState(RUSH_HOUR_DATA[boardNumber])
 
 def rushHourHeuristic(state, problem=None):
-    return 0
+    lineas = len(state.cells)
+    
+    x,y = state.cars['x'][3]
+    if lineas == 6:
+        posGoal = (2,4)
+    else:
+        posGoal = (4,7)
+    
+    heuristico = posGoal[1]-y
+    print(heuristico)
+    return heuristico
     
 if __name__ == '__main__':
+    
     parser = argparse.ArgumentParser(description='A program to calculate a solution to the Rush Hour problem.')
     parser.add_argument("--board_number", help="The board from the initial boards available", type=int, default=0)
     parser.add_argument("--search_algorithm", help="The algorithm: bfs or aStar", default="bfs")
