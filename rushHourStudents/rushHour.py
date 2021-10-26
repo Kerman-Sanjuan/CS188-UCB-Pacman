@@ -133,19 +133,19 @@ class RushHourState:
         # TODO
 
         #primero debemos buscar el número de líneas que tiene el tablero 
-        lineas = len(self.board)
+        lineas = len(self.cells)
         #ahora conseguimos la posición del coche rojo en el tablero
         posicion_coche = self.cars['x'][3]
         posicion_coche_x, posicion_coche_y = posicion_coche
 
 
-        if lineas == 6: #para un tablero de 6x6 si la posicion del coche son x=5 y=4 estará en el state goal (X son las columnas del 1 al right e Y son las filas del 1 al Top )
-            if (posicion_coche_x == 5 and posicion_coche_y == 4):
+        if lineas == 6: #para un tablero de 6x6 si la posicion del coche son x=2 y=4 estará en el state goal (X son las filas e Y son las columnas)
+            if (posicion_coche_x == 2 and posicion_coche_y == 4):
                 return True
             else:
                 return False
         else:   
-            if (posicion_coche_x == 7 and posicion_coche_y == 6):
+            if (posicion_coche_x == 4 and posicion_coche_y == 7):
                 return True
             else: 
                 return False
@@ -168,9 +168,38 @@ class RushHourState:
         [('b', 'down'), ('p', 'up'), ('h', 'right')]
         """
         moves = []
-        for key in self.cars:
-            #print("Car: ", key)
-            #TODO
+        for key in self.cars: #recorremos el diccionario de coches es el tablero
+            coche = self.cars[key] #obtenemos todos los valores del coche con clave=key en el diccionario. 
+            #Devolverá algo así -> ('x', 2, 'h', (x,y)): (letter, length, direction(h|v), coordinates of the first position, starting from the upper left position)
+            carCoordinates = coche[3] #obtenemos las coordenadas del coche. Es el 3er valor
+            x,y = carCoordinates #asignamos a x la coordenada de la fila y a y la de la columna
+            orientacion = coche[1] #nos interesa saber si el coche está colocado en vertical o en horizontal
+            nombre = coche[0]
+            longitudCoche = coche[2]
+            if orientacion == 'v': #el coche está colocado en vertical y solo puede o subir o bajar. Trataremos casos críticos
+                if(x == 0): #la posición más elevada del coche está en la primera fila y por lo tanto no puede subir
+                    if(self.cells[x+longitudCoche][y] == self.blank): #en este caso la posición debajo del coche está libre
+                        moves.append((nombre,'down'))
+                elif((x+longitudCoche) == len(self.cells)): #la posición de la parte inferior del coche está en la última fila y por ello no puede bajar
+                    if(self.cells[x-1][y] == self.blank): #la casilla de encima del coche está vacía
+                        moves.append((nombre,'up'))
+                else: #puede tanto subir como bajar
+                    if(self.cells[x+longitudCoche][y] == self.blank): #en este caso la posición de debajo del coche está libre
+                        moves.append((nombre,'down'))
+                    if(self.cells[x-1][y] == self.blank): #la casilla de encima del coche está vacía
+                        moves.append((nombre,'up'))
+            else: #en este caso el coche está colocado en horizontal y el coche puede moverse de izquierda a derecha. 
+                if(y == 0): #esta en la primera columna (izquierda) y no puede ir a la izquiera
+                    if(self.cells[x][y+longitudCoche] == self.blank): #existe hueco a la derecha
+                        moves.append((nombre,'right'))
+                elif((y+longitudCoche) == len(self.cells)): #el final del coche está en la columna de más a la derecha
+                    if(self.cells[x][y-1] == self.blank): #el hueco a la izquiera del coche está vacío
+                        moves.append((nombre,'left'))
+                else: #puede tanto ir a la izquierda como a la derecha
+                        if(self.cells[x][y+longitudCoche] == self.blank): #existe hueco a la derecha
+                            moves.append((nombre,'right'))
+                        if(self.cells[x][y-1] == self.blank): #el hueco a la izquiera del coche está vacío
+                            moves.append((nombre,'left'))
         return moves
 
     def result(self, movePair):
@@ -190,7 +219,21 @@ class RushHourState:
         (car, move) = movePair
         (c, dir, len, (cx, cy)) = self.cars[car]
         if(move == 'up'):
-            #TODO
+            newCells[cx+len-1][cy] = self.blank #el hueco final que ocupaba el coche que se ha movido hacia arriba queda vacío
+            newCells[cx-1][cy] = c #la posición de encima del coche ahora pertenecerá al coche de nombre 'c'
+            newCars[c] = (c, dir, len, (cx-1, cy)) #en el diccionario actualizamos la posición del coche una posición más arriba
+        elif(move == 'down'):
+            newCells[cx][cy] = self.blank #el hueco primero que ocupa el coche queda ahora vacío
+            newCells[cx+len][cy] = c
+            newCars[c] = (c, dir, len, (cx+1, cy))
+        elif(move == 'left'):
+            newCells[cx][cy+len-1] = self.blank
+            newCells[cx][cy-1] = c
+            newCars[c] = (c, dir, len, (cx, cy-1))
+        elif(move == 'right'):
+            newCells[cx][cy] = self.blank
+            newCells[cx][cy+len] = c
+            newCars[c] = (c, dir, len, (cx, cy+1))
         else:
             raise "Illegal Move"
 
