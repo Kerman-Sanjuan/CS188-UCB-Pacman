@@ -37,7 +37,7 @@ class MyAgent(Agent):
         """
 
         "*** YOUR CODE HERE ***"
-
+        
         raise NotImplementedError()
 
     def initialize(self):
