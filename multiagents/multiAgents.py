@@ -16,7 +16,7 @@ from util import manhattanDistance
 from game import Directions
 import random
 import util
-
+import sys
 from game import Agent
 
 
@@ -56,6 +56,7 @@ class ReflexAgent(Agent):
         return legalMoves[chosenIndex]
 
     def evaluationFunction(self, currentGameState, action):
+        
         """
         Design a better evaluation function here.
 
@@ -67,6 +68,8 @@ class ReflexAgent(Agent):
         newScaredTimes holds the number of moves that each ghost will remain
         scared because of Pacman having eaten a power pellet.
 
+        La mejor puntuacion sera la que tiene la menor cantidad de comida y la que maxea 
+        el scared time. La suma de ambos deberia de valer.
         Print out these variables to see what you're getting, then combine them
         to create a masterful evaluation function.
         """
@@ -79,6 +82,9 @@ class ReflexAgent(Agent):
             ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
+        
+
+
         return successorGameState.getScore()
 
 
@@ -118,12 +124,51 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
     Your minimax agent (question 2)
     """
-
+    def min_action(self, gameState,depth,index): # Los fantasmas
+        
+        if (depth == self.depth or gameState.isWin() or gameState.isLose()):
+            return self.evaluationFunction(gameState)
+        
+        min_number = - sys.maxsize
+        
+        for action in gameState.getLegalActions(index):
+             succesor = gameState.generateSuccessor(index,action)
+             if gameState.getNumAgents() == index+1:
+                 return min(min_number,self.max_action(succesor,depth))
+             else:
+                return min(min_number,self.min_action(succesor,depth,index+1))
+            
+        
+    def max_action(self, gameState,depth): # Solo nos interesa maximizar el pacman
+        depth_n= depth + 1 
+        if (depth == self.depth or gameState.isWin() or gameState.isLose()):
+            return self.evaluationFunction(gameState)
+        
+        max_number = sys.maxsize
+        
+        for action in gameState.getLegalActions(0):
+            succesor = gameState.generateSuccessor(0,action)
+            max_number = max(max_number,self.min_action(succesor,depth_n,1))
+            return max_number
+        
+    def get_root_action(self, gameState):
+        actions = gameState.getLegalActions(0)
+        score_aux = - sys.maxsize
+        actions_todo = ''
+        
+        for action in actions:
+            score = self.min_action(gameState.generateSuccessor(0,action),0,1)
+            if score > score_aux:
+                actions_todo = action
+                score_aux = score
+                
+        return actions_todo
+    
     def getAction(self, gameState):
         """
         Returns the minimax action from the current gameState using self.depth
         and self.evaluationFunction.
-
+        
         Here are some method calls that might be useful when implementing minimax.
 
         gameState.getLegalActions(agentIndex):
@@ -143,7 +188,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        # Empezamos con profundidad 0 hasta llegar a la profundiad correspondiente.
+        
+        return self.get_root_action(gameState)
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
