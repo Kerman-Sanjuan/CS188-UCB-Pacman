@@ -90,7 +90,7 @@ class ReflexAgent(Agent):
         #Nos interesa lograr la puntuación más elevada de cada movimiento para elegir siempre la que más aporte
         #por lo que cuanto más comamos, más alejados de los fantasmas estemos mejor
 
-        #Variable que vamos a devolver
+       #Variable que vamos a devolver
         resultado = 0
 
         #Comprobar que hemos comido comida
@@ -98,20 +98,16 @@ class ReflexAgent(Agent):
         listaComidaActual = currentGameState.getFood().asList() #lista de comida del estado actual
 
         if(len(listaComidaActual) > len(listaComidaSucesor)): #significa que hemos comido 1 comida en la transicion del estado actual al sucesor, añadimos 100 puntos
-            resultado = resultado + 10
-
-        #No comer también restará
-        if(len(listaComidaActual) == len(listaComidaSucesor)): #significa que hemos comido 1 comida en la transicion del estado actual al sucesor, añadimos 100 puntos
-            resultado = resultado - 5
+            resultado = resultado + 500
 
         #Haremos lo mismo para los puntos grandes
         listaPuntosSucesor = successorGameState.getCapsules()
         listaPuntosActual = currentGameState.getCapsules()
 
         if(len(listaPuntosActual) > len(listaPuntosSucesor)): #significa que hemos comido punto
-            resultado = resultado + 10
+            resultado = resultado + 500
 
-         #Tambien nos interesa estar alejados de los fantasmas, por lo que una distancia cercana a un fantasma nos bajará puntos
+        #Tambien nos interesa estar alejados de los fantasmas, por lo que una distancia cercana a un fantasma nos bajará puntos
         #conseguimos las distancias a los fantasmas
         distanciaFantasmas = []
         for ghostState in newGhostStates:
@@ -121,27 +117,23 @@ class ReflexAgent(Agent):
 
         for distancia in distanciaFantasmas: #penalizaremos mucho el estar a menos de 4 (distancia manhattan) de un fantasma
             if distancia < 4:
-                resultado = resultado - 10
+                resultado = resultado - 1000
 
         #Muchas veces el pacman se queda quieto así que restaremos puntos por ello
         if action == 'Stop':
-            resultado = resultado - 5
+            resultado = resultado - 100
 
         #Como nos interesa ganar daremos muchos puntos por ello
         if successorGameState.isWin():
            resultado = resultado + sys.maxsize
 
-        #Haremos lo contrario por perder
-        if successorGameState.isLose():
-            resultado = resultado - sys.maxsize
-
         #Probando hasta aquí me he dado cuenta que no se premia el acercarse a la comida y eso hace que el pacman no se acerce a por ella
         comidaMasCercana = sys.maxsize
         for comida in newFood.asList():
             comidaMasCercana = min(comidaMasCercana, manhattanDistance(comida, newPos))
-        resultado = resultado + 10 - comidaMasCercana*2
-        print(successorGameState)
-        return successorGameState.getScore() + resultado
+        resultado = resultado + 1000 - comidaMasCercana
+
+        return resultado
         
 
 
