@@ -127,6 +127,10 @@ class ReflexAgent(Agent):
         if successorGameState.isWin():
            resultado = resultado + sys.maxsize
 
+         #Como no nos interesa perder quitaremos muchos puntos por ello
+        if successorGameState.isLose():
+           resultado = resultado - sys.maxsize
+
         #Probando hasta aquí me he dado cuenta que no se premia el acercarse a la comida y eso hace que el pacman no se acerce a por ella
         comidaMasCercana = sys.maxsize
         for comida in newFood.asList():
@@ -381,6 +385,64 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+
+    #Variable que vamos a devolver 
+    resultado = 0
+
+    posicionActual = currentGameState.getPacmanPosition()
+    listaComidas = currentGameState.getFood().asList()
+    listaPuntos = currentGameState.getCapsules()
+
+    #Podemos añadir una lista de comidas ya comidas
+    listaYaComidas = currentGameState.getFood().asList(False)
+
+
+    #Calcularemos primero las distancias a los fantasmas del estado actual y el sucesor
+    
+    #Estado actual
+
+    #Posiciones actuales de los fantasmas
+    posicionesFastasmasActuales = []
+    for fantasma in currentGameState.getGhostStates():
+        posFantasma = fantasma.getPosition()
+        posicionesFastasmasActuales.append(posFantasma)
+
+    #Distancia a cada fantasma del estado actual desde la posición de pacman
+    distanciaFantasmasActual = []
+    for posFantasma in posicionesFastasmasActuales:
+        distancia = manhattanDistance(posicionActual, posFantasma)
+        distanciaFantasmasActual.append(distancia)
+
+    #Calculamos también las distancias a las comidas
+    distanciaComidas = []
+    for comida in listaComidas:
+        distancia = manhattanDistance(posicionActual, comida)
+        distanciaComidas.append(distancia)
+
+
+    resultado = resultado + currentGameState.getScore() + len(listaYaComidas) #añadimos al resultado el número de comidas ya tragadas
+
+    #Ahora vamos a diferenciar dos casos, los fantasmas asustados y los fantasmas no asustados
+    estadoFantasmas = currentGameState.getGhostStates()
+    contadoresAsustados = [ghostState.scaredTimer for ghostState in estadoFantasmas]
+
+    fantasmasAsustados = sum(contadoresAsustados) #si es mayor a 0 significa que hay fantasmas asustados
+    distanciaTotalFanstasmas = sum(distanciaFantasmasActual)
+
+    if(fantasmasAsustados > 0): #significa que hay fantasmas asustados
+        resultado = resultado + fantasmasAsustados - distanciaTotalFanstasmas #restaremos por estar alejado de los fantasmas
+    else:
+        resultado = resultado + distanciaTotalFanstasmas
+
+    #Ademas podemos añadir que en el caso de que haya fantasmas asustados se reste por cada punto grande no comido y viceversa
+    
+    if(fantasmasAsustados > 0): #significa que hay fantasmas asustados
+        resultado = resultado - len(listaPuntos)
+    else: 
+        resultado = resultado + len(listaPuntos)
+    
+    
+    return resultado
     util.raiseNotDefined()
 
 
