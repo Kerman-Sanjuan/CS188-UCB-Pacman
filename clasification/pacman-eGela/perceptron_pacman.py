@@ -45,9 +45,31 @@ class PerceptronClassifierPacman(PerceptronClassifier):
         self.features = trainingData[0][0]['Stop'].keys() # could be useful later
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
         # THE AUTOGRADER WILL LIKELY DEDUCT POINTS.
-
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
                 "*** YOUR CODE HERE ***"
-                util.raiseNotDefined()
+                score = util.Counter() #inicializar score(f,y)
+                clases = self.legalLabels #estas son las distintas posibles clases que puede tomar una instancia
+                instancia = trainingData[i] #los diferentes valores de cada instancia del train
+                claseInstancia = trainingLabels[i] #el valor real de la clase de cada instancia
+
+                acciones = instancia[0]
+                movimientosPosibles = instancia[1]
+        
+                i = 0
+
+                for movimiento in movimientosPosibles:
+                    comida = acciones[movimiento]["foodCount"]
+                    score[movimiento] = self.weights * [comida]   #score = f(x) * w
+                    
+
+                claseEstimada = score.argMax()
+            
+
+                if(claseInstancia == claseEstimada): #si la clase estimada coincide con la clase real no hacemos nada
+                    pass
+                else: #si la clase estimada no coincide con el valor real de la clase actualizamos los pesos
+                    self.weights =  self.weights + acciones[claseInstancia] #acercamos (sumando) la clase real
+                    self.weights = self.weights - acciones[claseEstimada] #alejamos (restando) la clase estimada del vector real
+                    
