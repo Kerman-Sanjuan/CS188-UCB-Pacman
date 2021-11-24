@@ -55,8 +55,8 @@ class PerceptronClassifier:
 
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
-            for i in range(len(trainingData)):#training data
-                pdb.set_trace()#esto es un break point para que puedas comprobar el formato de los datos
+            for i in range(len(trainingData)):#training data 0..99
+                #pdb.set_trace()#esto es un break point para que puedas comprobar el formato de los datos
                 ########################################################################################
                 # 1. i es el indice de un ejemplo (un item, f(x) de un ejemplo) del conjunto de entrenamiento.
                 # 2. Asi pues, en cada vuelta de este loop se trata un solo ejemplo
@@ -67,7 +67,24 @@ class PerceptronClassifier:
                 #          Recordad tambien que es una clasificacion multiclase en este caso. Hay tantas clases como nos marca el atributo self.legalLabels
                 #########################################################################################
                 "*** YOUR CODE HERE ***"
+                score = util.Counter() #inicializar score(f,y)
+                clases = self.legalLabels #estas son las distintas posibles clases que puede tomar una instancia
+                instancia = trainingData[i] #los diferentes valores de cada instancia del train
+                claseInstancia = trainingLabels[i] #el valor real de la clase de cada instancia
+                
+                for clase in clases:
+                    score[clase] = instancia * self.weights[clase] #score = f(x) * w
+                claseEstimada = score.argMax()
+            
 
+                if(claseInstancia == claseEstimada): #si la clase estimada coincide con la clase real no hacemos nada
+                    pass
+                else: #si la clase estimada no coincide con el valor real de la clase actualizamos los pesos
+                    self.weights[claseEstimada] = self.weights[claseEstimada] - instancia #alejamos (restando) la clase estimada del vector real
+                    self.weights[claseInstancia] = self.weights[claseInstancia] + instancia #acercamos (sumando) la clase real
+
+
+                
 
     def classify(self, data ):
         """

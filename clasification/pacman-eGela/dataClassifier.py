@@ -125,27 +125,40 @@ def enhancedPacmanFeatures(state, action):
     pac=state.getPacmanPosition()
     ghostPositions=state.getGhostPositions()
     "*** YOUR CODE HERE ***"
-    minD=9999
-    for food in foods:
-        d=util.manhattanDistance(food,pac)
-        minD=min(d,minD)
 
-    if minD!=9999:
-        features["closest food"] = 1.0/minD #con esto te da 4
-        #features["closest food"] = minD#con esto te da 2 puntos
+    #feature 1: distancia a las comidas
+
+    if foods: #existe una lista con las comidas de un estado sucesor
+        minD=sys.maxsize
+        for food in foods: #buscamos la menor
+            d=util.manhattanDistance(food,pac)
+            minD=min(d,minD)
+            if minD:
+                features["closest food"] = 1.0/minD #con esto te da 4
     else:
         features["closest food"] = 2
 
-    #if features["closest food"]==0:
-        #pdb.set_trace()
+    #feature 2: distancia a los fantasmas
+    
+    if ghostPositions: #existe una lista con las posiciones de los fantasmas en un estado sucesor 
+        minD=sys.maxsize
+        for ghost in ghostPositions: #buscamos la distancia minima
+            d=util.manhattanDistance(pac,ghost) 
+            minD=min(d,minD)
+            if minD: 
+                features["closest ghost"] = 1/pow(minD,2)
+    
+    else:
+        features["closest ghost"] = 2
 
+    
+    #feature 3: comida restante 
 
-    minD=10000000000
-    for ghost in state.getGhostPositions():
-        d=util.manhattanDistance(pac,ghost) 
-        minD=min(d,minD)
+    features['food remaining'] = state.getNumFood() 
 
-    features["closest ghost"] = minD#1/pow(minD,2)
+    #feature 4: puntos grandes restantes
+
+    features['capsules remaining'] = len(state.getCapsules())
 
     return features
 
