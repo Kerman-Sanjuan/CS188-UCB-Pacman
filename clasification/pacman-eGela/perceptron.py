@@ -56,7 +56,7 @@ class PerceptronClassifier:
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):#training data 0..99
-                #pdb.set_trace()#esto es un break point para que puedas comprobar el formato de los datos
+                pdb.set_trace()#esto es un break point para que puedas comprobar el formato de los datos
                 ########################################################################################
                 # 1. i es el indice de un ejemplo (un item, f(x) de un ejemplo) del conjunto de entrenamiento.
                 # 2. Asi pues, en cada vuelta de este loop se trata un solo ejemplo

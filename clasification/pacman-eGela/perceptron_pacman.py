@@ -49,7 +49,6 @@ class PerceptronClassifierPacman(PerceptronClassifier):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
                 "*** YOUR CODE HERE ***"
-                print(self.weights)
                 score = util.Counter() #inicializar score(f,y)
                 clases = self.legalLabels #estas son las distintas posibles clases que puede tomar una instancia
                 instancia = trainingData[i] #los diferentes valores de cada instancia del train -> ({'North': {'foodCount': 28}, 'East': {'foodCount': 28}, 'Stop': {'foodCount': 28}}, ['Stop', 'East', 'North'])

@@ -323,7 +323,7 @@ class RushHourSearchProblem(search.SearchProblem):
         """
         return len(actions)
 
-RUSH_HOUR_DATA = [["aaobcc", "..ob..", "xxo...", "deeffp", "d..k.p", "hh.k.p"],
+RUSH_HOUR_DATA = [["....a.", "....a.", "..xxa.", "...r..", "...rmm", "......"],
                   ["aaobc.", "..obc.", "xxo...", "deeffp", "d..k.p", "hh.k.p"],
                   ["aaabcd", "effbcd", "e.xxcd", "ggh...", ".ih.jj", ".ikkll"],
                   # Hardest initial Rush Hour 6x6 configuration
