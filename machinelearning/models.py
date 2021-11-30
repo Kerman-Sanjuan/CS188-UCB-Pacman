@@ -253,7 +253,7 @@ class DigitClassificationModel(object):
         EL NUM DE EJEMPLOS DEL TRAIN QUE SE HAN CLASIFICADO CORRECTAMENTE 
         """
 
-        parametros = [self.w0, self.w1, self.b0, self.b1]
+        parametros = [self.w0, self.w1, self.w2, self.w3, self.w4, self.b0, self.b1, self.b2, self.b3, self.b4]
         batch_size = 50
         while dataset.get_validation_accuracy() < 0.97:
             # ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
