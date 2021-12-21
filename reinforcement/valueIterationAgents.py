@@ -93,9 +93,9 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         qval = 0
         successors = self.mdp.getTransitionStatesAndProbs(state, action)
-        for n_estado, prob in successors:
-            premio = self.mdp.getReward(state, action, n_estado)
-            descuento = self.discount * self.getValue(n_estado)
+        for estado, prob in successors:
+            premio = self.mdp.getReward(state, action, estado)
+            descuento = self.discount * self.getValue(estado)
             qval += prob * (premio + descuento)
         return qval
 
