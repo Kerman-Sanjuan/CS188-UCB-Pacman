@@ -69,7 +69,7 @@ class QLearningAgent(ReinforcementAgent):
           return 0.0 
         for action in legalActions: #recorremos todas las opciones de acciones legales
           actualQValue = self.getQValue(state, action)
-          if actualQValue > maxValue: 
+          if actualQValue > maxValue: #actualizamos si el valor es mayor al actual
             maxValue = actualQValue
         return maxValue
 
@@ -126,6 +126,7 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
+        #formula del aprendizaje temporal -> V(s_t+1) = (1-alpha)*V(s_t)+alpha*[Reward+Discount*V(s'_t)]
         prevValue = self.getQValue(state, action)
         maxValue = self.computeValueFromQValues(nextState)
         self.values[(state, action)] = (1 - self.alpha) * prevValue + self.alpha * (reward + self.discount * maxValue)
